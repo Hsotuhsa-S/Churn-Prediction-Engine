@@ -1,0 +1,29 @@
+# Data Science Classification Models - Dependencies
+
+# Core Data Science Libraries
+numpy>=1.20.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Visualization
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# Machine Learning
+scikit-learn>=1.7.2 
+joblib>=1.5.2
+statsmodels>=0.13.0
+xgboost>=2.0.0
+
+# Model Tracking
+mlflow>=2.12.0
+
+# Jupyter and Development
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Web App Deployment
+streamlit>=1.10.0
+
+# Development and Model Inspection
+pickle-mixin>=1.0.2
