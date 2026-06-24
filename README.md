@@ -1,8 +1,67 @@
-# Churn Prediction Pipeline
+# Churn Prediction Pipeline - Model Engine
 
-## Purpose
+A ML model training pipeline for predicting B2B/SaaS customer churn. It ingests customer trajectory data, trains tree-based models (Random Forest / XGBoost), evaluates them, and registers the best model to MLflow's Model Registry. It supports both binary (churn vs. non-churn) and multiclass (churn / renewal / expansion / downsell) prediction.
 
-This project implements a **single entry point for binary and multiclass churn prediction** using tree-based ensemble models. The pipeline automates end-to-end model development from raw data preprocessing to hyperparameter tuning, evaluation, and model deployment-ready export.
+## Business Context
+
+Customer churn is one of the highest-cost problems in subscription and B2B businesses.
+This project provides the **Model Engine** of a production-grade churn prediction system —
+the component responsible for building, validating, and publishing the machine learning
+models that power retention decisions across Marketing and Sales.
+
+### The system is designed to support four business use cases:
+
+**1. Consume DE team CRM data**
+Ingests aggregated customer feature snapshots prepared by the Data Engineering team,
+applying schema validation and preprocessing before model training.
+
+**2. Scheduled and event-driven retraining**
+The pipeline is invocable via a single CLI command and designed to be called by an
+external Trigger Engine — whether on a time schedule or in response to data drift —
+keeping models current without manual intervention.
+
+**3. Daily churn risk scoring**
+The trained model is registered into the MLflow Model Registry. An approved Production
+version is consumed by a Scoring Engine that runs daily batch inference and produces
+per-customer churn probability scores.
+
+**4. Marketing and Sales actioning**
+Scores flow downstream to CRM tools and dashboards, enabling targeted retention
+campaigns driven by model-predicted churn risk.
+
+### Where this repository fits
+
+This repository implements the **Model Engine box only**. The Trigger Engine,
+Scoring Engine, and CRM/Dashboard are separate components that integrate via
+the MLflow Model Registry and the `run_churn_pipeline.py` CLI entry point.
+
+```mermaid
+flowchart TD
+    Trigger(["TRIGGER ENGINE\n(When to retrain?)"])
+    DE["DE Team\nData File\n(Landing Zone)"]
+    Model["MODEL ENGINE\ntrain  →  evaluate\n→  register model"]
+    Registry["MLflow\nModel Registry\n(stores model versions)"]
+    Scoring["SCORING ENGINE\n(daily batch run)"]
+    CRM["Marketing & Sales\n(CRM / Dashboard)"]
+
+    Trigger -- fires --> Model
+    DE --> Model
+    Model --> Registry
+    Registry -- "approved Production model" --> Scoring
+    Scoring -- "churn scores" --> CRM
+
+    classDef triggerStyle  fill:#EDE7F6,stroke:#512DA8,stroke-width:2px,color:#1a1a2e
+    classDef engineStyle   fill:#FFFDE7,stroke:#F57F17,stroke-width:3px,color:#1a1a2e
+    classDef registryStyle fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#1a1a2e
+    classDef downstreamStyle fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1a1a2e
+    classDef inputStyle    fill:#FAFAFA,stroke:#9E9E9E,stroke-width:1.5px,color:#1a1a2e
+
+    class Trigger triggerStyle
+    class Model engineStyle
+    class Registry registryStyle
+    class Scoring,CRM downstreamStyle
+    class DE inputStyle
+```
 
 ---
 
