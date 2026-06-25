@@ -311,7 +311,7 @@ pip install -r requirements.txt
 
 ## MLflow Integration
 
-**MLflow** is integrated into the pipeline (`churn_model_pipeline_mlflow.ipynb`) for experiment tracking, model versioning, and model registry management.
+**MLflow** is integrated into the pipeline for experiment tracking, model versioning, and model registry management.
 
 ### Key capabilities provided by `src/mlflow_logger.py`
 
